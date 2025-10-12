@@ -1,0 +1,1838 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Mirrored from adce626.vercel.app/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 08 Oct 2025 15:37:10 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Bug Bounty Toolkit</title>
+    <link rel="stylesheet" href="../cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&amp;family=Fira+Code:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-neon: #00ff41;
+            --secondary-neon: #ff0080;
+            --tertiary-neon: #00d4ff;
+            --accent-purple: #8b00ff;
+            --dark-bg: #0a0a0a;
+            --darker-bg: #000000;
+            --card-bg: #111111;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #666666;
+            --border-glow: #00ff41;
+            --shadow-neon: rgba(0, 255, 65, 0.3);
+            --shadow-purple: rgba(139, 0, 255, 0.3);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 65, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 128, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 65, 0.03) 2px,
+                    rgba(0, 255, 65, 0.03) 4px
+                );
+            z-index: -1;
+            animation: scan 20s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--darker-bg) 0%, var(--card-bg) 100%);
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-glow);
+            box-shadow: 0 2px 20px var(--shadow-neon);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary-neon);
+            text-shadow: 0 0 20px var(--shadow-neon);
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 20px var(--shadow-neon); }
+            100% { text-shadow: 0 0 30px var(--shadow-neon), 0 0 40px var(--shadow-neon); }
+        }
+
+        .user-badge {
+            background: linear-gradient(135deg, var(--primary-neon), var(--tertiary-neon));
+            color: var(--darker-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px var(--shadow-neon);
+            transition: var(--transition);
+        }
+
+        .user-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 25px var(--shadow-neon);
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 2rem 2rem;
+        }
+
+        /* Domain input section */
+        .domain-input-section {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #1a1a1a 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            border: 1px solid var(--border-glow);
+            box-shadow: 0 10px 40px var(--shadow-neon);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .domain-input-section::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary-neon), var(--secondary-neon), var(--tertiary-neon), var(--accent-purple));
+            border-radius: 20px;
+            z-index: -1;
+            animation: borderGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .domain-input-section h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            color: var(--primary-neon);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px var(--shadow-neon);
+        }
+
+        .domain-input-section p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .domain-input-container {
+            display: flex;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .domain-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            background: var(--darker-bg);
+            border: 2px solid var(--border-glow);
+            border-radius: 15px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-family: 'Fira Code', monospace;
+            transition: var(--transition);
+            box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.1);
+        }
+
+        .domain-input:focus {
+            outline: none;
+            border-color: var(--secondary-neon);
+            box-shadow: 0 0 20px var(--shadow-purple);
+            transform: translateY(-2px);
+        }
+
+        .domain-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .apply-btn {
+            background: linear-gradient(135deg, var(--primary-neon), var(--tertiary-neon));
+            color: var(--darker-bg);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Fira Code', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--shadow-neon);
+        }
+
+        /* Search bar */
+        .search-container {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem 1rem 3rem;
+            background: var(--card-bg);
+            border: 2px solid var(--border-glow);
+            border-radius: 15px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Fira Code', monospace;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--secondary-neon);
+            box-shadow: 0 0 15px var(--shadow-purple);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-neon);
+            font-size: 1.2rem;
+        }
+
+        /* Tool sections */
+        .tool-section {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #1a1a1a 100%);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-glow);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .tool-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--primary-neon), var(--tertiary-neon));
+            color: var(--darker-bg);
+            padding: 1.5rem 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .section-header:hover {
+            background: linear-gradient(135deg, var(--tertiary-neon), var(--secondary-neon));
+        }
+
+        .section-header h2 {
+            font-family: 'Orbitron', monospace;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-toggle {
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .section-toggle.rotated {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            padding: 2rem;
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-category {
+            margin-bottom: 2rem;
+        }
+
+        .tool-category h3 {
+            color: var(--secondary-neon);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-glow);
+            font-family: 'Orbitron', monospace;
+        }
+
+        .tool-item {
+            background: var(--darker-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tool-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px var(--shadow-neon);
+        }
+
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .tool-name {
+            color: var(--primary-neon);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, var(--secondary-neon), var(--accent-purple));
+            color: var(--text-primary);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            font-family: 'Fira Code', monospace;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px var(--shadow-purple);
+        }
+
+        .tool-command {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            word-break: break-all;
+            white-space: pre-wrap;
+            margin-bottom: 0.5rem;
+            box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.1);
+        }
+
+        .tool-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Stats section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--card-bg) 0%, #1a1a1a 100%);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px var(--shadow-neon);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            color: var(--primary-neon);
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--darker-bg) 0%, var(--card-bg) 100%);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-glow);
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            color: var(--primary-neon);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px var(--shadow-neon);
+        }
+
+        .footer-text {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .social-link {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-neon);
+            font-size: 1.2rem;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--shadow-neon);
+            background: var(--primary-neon);
+            color: var(--darker-bg);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 1rem;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .user-badge {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .container {
+                padding: 100px 1rem 2rem;
+            }
+
+            .domain-input-section {
+                padding: 2rem 1rem;
+            }
+
+            .domain-input-section h1 {
+                font-size: 2rem;
+            }
+
+            .domain-input-container {
+                flex-direction: column;
+            }
+
+            .section-content {
+                padding: 1rem;
+            }
+
+            .tool-item {
+                padding: 1rem;
+            }
+
+            .tool-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .stats-section {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                padding: 2rem 1rem;
+            }
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            background: linear-gradient(135deg, var(--primary-neon), var(--tertiary-neon));
+            color: var(--darker-bg);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-weight: 600;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: var(--transition);
+            box-shadow: 0 10px 30px var(--shadow-neon);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-bug"></i>
+                BugHunt Toolkit
+            </div>
+            <div class="user-badge">
+                <i class="fas fa-user-secret"></i>
+                adce626
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Domain Input Section -->
+        <div class="domain-input-section">
+            <h1>Bug Bounty Recon Toolkit</h1>
+            <p>Enter your target domain to generate personalized recon commands</p>
+            <div class="domain-input-container">
+                <input type="text" id="domainInput" class="domain-input" placeholder="Enter domain (e.g., example.com)" value="example.com">
+                <button class="apply-btn" onclick="updateCommands()">
+                    <i class="fas fa-sync-alt"></i>
+                    Generate
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search tools and commands...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Tools</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="stat-number">100+</div>
+                <div class="stat-label">Commands</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="stat-number">10+</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Possibilities</div>
+            </div>
+        </div>
+
+        <!-- Tool Sections -->
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-sitemap"></i> Subdomain Enumeration</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>Automated Enumeration</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Subfinder</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">subfinder -d <span class="domain-placeholder">example.com</span> -all -recursive -o subfinder.txt</div>
+                        <div class="tool-description">Fast subdomain discovery using multiple data sources</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Assetfinder</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">assetfinder --subs-only <span class="domain-placeholder">example.com</span> > assetfinder.txt</div>
+                        <div class="tool-description">Find domains and subdomains related to a given domain</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Findomain</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">findomain -t <span class="domain-placeholder">example.com</span> | tee findomain.txt</div>
+                        <div class="tool-description">Cross-platform subdomain enumerator</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Amass Passive</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">amass enum -passive -d <span class="domain-placeholder">example.com</span> | cut -d']' -f 2 | awk '{print $1}' | sort -u > amass.txt</div>
+                        <div class="tool-description">Passive subdomain enumeration using OSINT</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Amass Active</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">amass enum -active -d <span class="domain-placeholder">example.com</span> | cut -d']' -f 2 | awk '{print $1}' | sort -u > amass.txt</div>
+                        <div class="tool-description">Active subdomain enumeration with DNS resolution</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>Public Sources</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Certificate Transparency</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">curl -s https://crt.sh\?q\=\<span class="domain-placeholder">example.com</span>\&output\=json | jq -r '.[].name_value' | grep -Po '(\w+\.\w+\.\w+)$' >crtsh.txt</div>
+                        <div class="tool-description">Extract subdomains from Certificate Transparency logs</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Wayback Machine</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">curl -s "http://web.archive.org/cdx/search/cdx?url=*.<span class="domain-placeholder">example.com</span>/*&output=text&fl=original&collapse=urlkey" |sort| sed -e 's_https*://__' -e "s/\/.*//" -e 's/:.*//' -e 's/^www\.//' | sort -u > wayback.txt</div>
+                        <div class="tool-description">Discover subdomains from archived pages</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">VirusTotal</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">curl -s "https://www.virustotal.com/vtapi/v2/domain/report?apikey=[api-key]&domain=<span class="domain-placeholder">example.com</span>" | jq -r '.domain_siblings[]' > virustotal.txt</div>
+                        <div class="tool-description">Get domain siblings from VirusTotal</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">GitHub Subdomains</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">github-subdomains -d <span class="domain-placeholder">example.com</span> -t [github_token]</div>
+                        <div class="tool-description">Find subdomains in GitHub repositories</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>Subdomain Processing</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Merge & Deduplicate</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat *.txt | sort -u > final.txt</div>
+                        <div class="tool-description">Combine all subdomain files and remove duplicates</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Subdomain Permutation</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">subfinder -d <span class="domain-placeholder">example.com</span> | alterx | dnsx</div>
+                        <div class="tool-description">Generate subdomain permutations and resolve them</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Alterx Enrichment</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">echo <span class="domain-placeholder">example.com</span> | alterx -enrich | dnsx</div>
+                        <div class="tool-description">Enrich domain with common patterns</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Alterx with Wordlist</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">echo <span class="domain-placeholder">example.com</span> | alterx -pp word=/usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt | dnsx</div>
+                        <div class="tool-description">Use wordlist for subdomain permutation</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">FFUF Subdomain Bruteforce</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">ffuf -u "https://FUZZ.<span class="domain-placeholder">example.com</span>" -w wordlist.txt -mc 200,301,302</div>
+                        <div class="tool-description">Brute force subdomains using FFUF</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-network-wired"></i> ASN & IP Discovery</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>ASN Mapping</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">ASN Discovery</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">asnmap -d <span class="domain-placeholder">example.com</span> | dnsx -silent -resp-only</div>
+                        <div class="tool-description">Discover IP addresses associated with domain's ASN</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Amass Intel by Organization</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">amass intel -org "organization_name"</div>
+                        <div class="tool-description">Discover assets by organization name</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Amass Intel by CIDR</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">amass intel -active -cidr 159.69.129.82/32</div>
+                        <div class="tool-description">Discover assets within IP range</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Amass Intel by ASN</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">amass intel -active -asn [asnno]</div>
+                        <div class="tool-description">Discover assets by ASN number</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>IP Harvesting</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">VirusTotal IP Lookup</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">curl -s "https://www.virustotal.com/vtapi/v2/domain/report?domain=<span class="domain-placeholder">example.com</span>&apikey=[api-key]" | jq -r '.. | .ip_address? // empty' | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}'</div>
+                        <div class="tool-description">Extract IP addresses from VirusTotal</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">AlienVault OTX</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">curl -s "https://otx.alienvault.com/api/v1/indicators/hostname/<span class="domain-placeholder">example.com</span>/url_list?limit=500&page=1" | jq -r '.url_list[]?.result?.urlworker?.ip // empty' | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}'</div>
+                        <div class="tool-description">Get IP addresses from AlienVault OTX</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">URLScan.io</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">curl -s "https://urlscan.io/api/v1/search/?q=domain:<span class="domain-placeholder">example.com</span>&size=10000" | jq -r '.results[]?.page?.ip // empty' | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}'</div>
+                        <div class="tool-description">Extract IP addresses from URLScan.io</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Shodan SSL Search</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">shodan search Ssl.cert.subject.CN:"<span class="domain-placeholder">example.com</span>" 200 --fields ip_str | httpx-toolkit -sc -title -server -td</div>
+                        <div class="tool-description">Find IP addresses using Shodan SSL certificate search</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-heartbeat"></i> Live Host Discovery</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>HTTP Probing</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">HTTPX Basic</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat subdomain.txt | httpx-toolkit -ports 80,443,8080,8000,8888 -threads 200 > subdomains_alive.txt</div>
+                        <div class="tool-description">Probe for live hosts on multiple ports</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">HTTPX with Status Codes</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat subdomain.txt | httpx-toolkit -sc -title -server -td -ports 80,443,8080,8000,8888 -threads 200</div>
+                        <div class="tool-description">Probe with detailed information extraction</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>Visual Recon</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Aquatone Basic</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat hosts.txt | aquatone</div>
+                        <div class="tool-description">Take screenshots of live hosts</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Aquatone Custom Ports</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat hosts.txt | aquatone -ports 80,443,8000,8080,8443</div>
+                        <div class="tool-description">Screenshot with custom port list</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Aquatone Extended Ports</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat hosts.txt | aquatone -ports 80,81,443,591,2082,2087,2095,2096,3000,8000,8001,8008,8080,8083,8443,8834,8888</div>
+                        <div class="tool-description">Screenshot with extended port range</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-link"></i> URL Collection & Analysis</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>Active Crawling</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Katana</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">katana -u livesubdomains.txt -d 2 -o urls.txt</div>
+                        <div class="tool-description">Fast web crawler for URL discovery</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Hakrawler</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat urls.txt | hakrawler -u > urls3.txt</div>
+                        <div class="tool-description">Simple, fast web crawler</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>Passive Crawling</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">GAU (Get All URLs)</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat livesubdomains.txt | gau | sort -u > urls2.txt</div>
+                        <div class="tool-description">Fetch known URLs from AlienVault's OTX, Wayback Machine, and Common Crawl</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">URLFinder</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">urlfinder -d <span class="domain-placeholder">example.com</span> | sort -u > urls3.txt</div>
+                        <div class="tool-description">Find URLs from various sources</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">GAU with Status Filter</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">echo <span class="domain-placeholder">example.com</span> | gau --mc 200 | urldedupe > urls.txt</div>
+                        <div class="tool-description">Get URLs with 200 status code and deduplicate</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>Parameter Extraction</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Extract URLs with Parameters</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat allurls.txt | grep '=' | urldedupe | tee output.txt</div>
+                        <div class="tool-description">Extract URLs containing parameters</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Parameter Pattern Matching</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat allurls.txt | grep -E '\?[^=]+=.+$' | tee output.txt</div>
+                        <div class="tool-description">Extract URLs with parameter patterns</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">GF SQLi Pattern</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat allurls.txt | gf sqli</div>
+                        <div class="tool-description">Filter URLs potentially vulnerable to SQL injection</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-bug"></i> Vulnerability Scanning</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>Nuclei Templates</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Nuclei Single Target</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">nuclei -u https://<span class="domain-placeholder">example.com</span> -bs 50 -c 30</div>
+                        <div class="tool-description">Run Nuclei templates against single target</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Nuclei Multiple Targets</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">nuclei -l live_domains.txt -bs 50 -c 30</div>
+                        <div class="tool-description">Run Nuclei templates against multiple targets</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Nuclei with Specific Severity</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">nuclei -l live_domains.txt -s critical,high -bs 50 -c 30</div>
+                        <div class="tool-description">Run only critical and high severity templates</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-file-alt"></i> Sensitive File Discovery</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>File Extension Filtering</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Basic Sensitive Files</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat allurls.txt | grep -E "\.xls|\.xml|\.xlsx|\.json|\.pdf|\.sql|\.doc|\.docx|\.pptx|\.txt|\.zip|\.tar\.gz|\.tgz|\.bak|\.7z|\.rar|\.log|\.cache|\.secret|\.db|\.backup|\.yml|\.gz|\.config|\.csv|\.yaml|\.md|\.md5"</div>
+                        <div class="tool-description">Filter URLs for common sensitive file extensions</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Extended Sensitive Files</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat allurls.txt | grep -E "\.(xls|xml|xlsx|json|pdf|sql|doc|docx|pptx|txt|zip|tar\.gz|tgz|bak|7z|rar|log|cache|secret|db|backup|yml|gz|config|csv|yaml|md|md5|tar|xz|7zip|p12|pem|key|crt|csr|sh|pl|py|java|class|jar|war|ear|sqlitedb|sqlite3|dbf|db3|accdb|mdb|sqlcipher|gitignore|env|ini|conf|properties|plist|cfg)$"</div>
+                        <div class="tool-description">Extended regex for sensitive file discovery</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Google Dork for Files</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">site:*.<span class="domain-placeholder">example.com</span> (ext:doc OR ext:docx OR ext:odt OR ext:pdf OR ext:rtf OR ext:ppt OR ext:pptx OR ext:csv OR ext:xls OR ext:xlsx OR ext:txt OR ext:xml OR ext:json OR ext:zip OR ext:rar OR ext:md OR ext:log OR ext:bak OR ext:conf OR ext:sql)</div>
+                        <div class="tool-description">Google search for sensitive files</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-search"></i> Hidden Parameter Discovery</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>Arjun Parameter Discovery</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Arjun Passive Discovery</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">arjun -u https://<span class="domain-placeholder">example.com</span>/endpoint.php -oT arjun_output.txt -t 10 --rate-limit 10 --passive -m GET,POST --headers "User-Agent: Mozilla/5.0"</div>
+                        <div class="tool-description">Passive parameter discovery using Arjun</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Arjun Active Discovery</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">arjun -u https://<span class="domain-placeholder">example.com</span>/endpoint.php -oT arjun_output.txt -m GET,POST -w /usr/share/wordlists/seclists/Discovery/Web-Content/burp-parameter-names.txt -t 10 --rate-limit 10 --headers "User-Agent: Mozilla/5.0"</div>
+                        <div class="tool-description">Active parameter discovery with wordlist</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-folder"></i> Directory & File Bruteforcing</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>Dirsearch</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Dirsearch Basic</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">dirsearch -u https://<span class="domain-placeholder">example.com</span> --full-url --deep-recursive -r</div>
+                        <div class="tool-description">Basic directory and file discovery</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Dirsearch Extended</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">dirsearch -u https://<span class="domain-placeholder">example.com</span> -e php,cgi,htm,html,shtm,shtml,js,txt,bak,zip,old,conf,log,pl,asp,aspx,jsp,sql,db,sqlite,mdb,tar,gz,7z,rar,json,xml,yml,yaml,ini,java,py,rb,php3,php4,php5 --random-agent --recursive -R 3 -t 20 --exclude-status=404 --follow-redirects --delay=0.1</div>
+                        <div class="tool-description">Extended directory bruteforcing with multiple extensions</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>FFUF</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">FFUF Directory Discovery</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">ffuf -w seclists/Discovery/Web-Content/directory-list-2.3-big.txt -u https://<span class="domain-placeholder">example.com</span>/FUZZ -fc 400,401,402,403,404,429,500,501,502,503 -recursion -recursion-depth 2 -e .html,.php,.txt,.pdf,.js,.css,.zip,.bak,.old,.log,.json,.xml,.config,.env,.asp,.aspx,.jsp,.gz,.tar,.sql,.db -ac -c -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0" -t 10</div>
+                        <div class="tool-description">FFUF directory discovery with recursion and multiple extensions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-bug"></i> WordPress Security Testing</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>WPScan</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">WPScan Full Enumeration</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">wpscan --url https://<span class="domain-placeholder">example.com</span> --disable-tls-checks --api-token YOUR_API_TOKEN -e at -e ap -e u --enumerate ap --plugins-detection aggressive --force</div>
+                        <div class="tool-description">Comprehensive WordPress security scan with aggressive plugin detection</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-shield-alt"></i> CORS Testing</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>Manual CORS Testing</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">CORS Test with Curl</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">curl -H "Origin: http://<span class="domain-placeholder">example.com</span>" -I https://<span class="domain-placeholder">example.com</span>/wp-json/</div>
+                        <div class="tool-description">Test CORS configuration with custom origin</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Detailed CORS Analysis</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">curl -H "Origin: http://<span class="domain-placeholder">example.com</span>" -I https://<span class="domain-placeholder">example.com</span>/wp-json/ | grep -i -e "access-control-allow-origin" -e "access-control-allow-methods" -e "access-control-allow-credentials"</div>
+                        <div class="tool-description">Analyze CORS headers in response</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>Automated CORS Testing</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Nuclei CORS Test</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat subdomains.txt | httpx-toolkit -silent | nuclei -t nuclei-templates/vulnerabilities/cors/ -o cors_results.txt</div>
+                        <div class="tool-description">Automated CORS vulnerability scanning with Nuclei</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Corsy Tool</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">python3 corsy.py -i subdomains_alive.txt -t 10 --headers "User-Agent: GoogleBot\nCookie: SESSION=Hacked"</div>
+                        <div class="tool-description">Advanced CORS testing with Corsy</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">CORScanner</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">python3 CORScanner.py -u https://<span class="domain-placeholder">example.com</span> -d -t 10</div>
+                        <div class="tool-description">Comprehensive CORS vulnerability scanner</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-exchange-alt"></i> Subdomain Takeover</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>Subzy</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Subdomain Takeover Detection</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">subzy run --targets subdomains.txt --concurrency 100 --hide_fails --verify_ssl</div>
+                        <div class="tool-description">Automated subdomain takeover detection with SSL verification</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-code-branch"></i> Git Repository Disclosure</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>Git Exposure Detection</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Git Directory Discovery</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat domains.txt | grep "SUCCESS" | gf urls | httpx-toolkit -sc -server -cl -path "/.git/" -mc 200 -location -ms "Index of" -probe</div>
+                        <div class="tool-description">Detect exposed .git directories and directory listings</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-server"></i> SSRF Testing</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>SSRF Parameter Discovery</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Find SSRF Parameters</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat urls.txt | grep -E 'url=|uri=|redirect=|next=|data=|path=|dest=|proxy=|file=|img=|out=|continue=' | sort -u</div>
+                        <div class="tool-description">Identify URLs with SSRF-prone parameters</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Find API/Webhook Patterns</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat urls.txt | grep -i 'webhook\|callback\|upload\|fetch\|import\|api' | sort -u</div>
+                        <div class="tool-description">Find API endpoints and webhook integrations</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>SSRF Testing</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Nuclei SSRF Scan</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat urls.txt | nuclei -t nuclei-templates/vulnerabilities/ssrf/</div>
+                        <div class="tool-description">Automated SSRF vulnerability scanning</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Basic SSRF Test</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">curl "https://<span class="domain-placeholder">example.com</span>/page?url=http://127.0.0.1:80/"</div>
+                        <div class="tool-description">Basic SSRF test to localhost</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Cloud Metadata SSRF</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">curl "https://<span class="domain-placeholder">example.com</span>/api?endpoint=http://169.254.169.254/latest/meta-data/"</div>
+                        <div class="tool-description">Test SSRF against cloud metadata services</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-external-link-alt"></i> Open Redirect Testing</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>Parameter Discovery</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Find Redirect Parameters</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat urls.txt | grep -Pi "returnUrl=|continue=|dest=|destination=|forward=|go=|goto=|login\?to=|login_url=|logout=|next=|next_page=|out=|g=|redir=|redirect=|redirect_to=|redirect_uri=|redirect_url=|return=|returnTo=|return_path=|return_to=|return_url=|rurl=|site=|target=|to=|uri=|url=|qurl=|rit_url=|jump=|jump_url=|originUrl=|origin=|Url=|desturl=|u=|Redirect=|location=|ReturnUrl=" | tee redirect_params.txt</div>
+                        <div class="tool-description">Extract URLs with redirect parameters</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">GF Redirect Pattern</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat urls.txt | gf redirect | uro | sort -u | tee redirect_params.txt</div>
+                        <div class="tool-description">Use GF patterns to find redirect parameters</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>Testing</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Basic Open Redirect Test</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat redirect_params.txt | qsreplace "https://evil.com" | httpx-toolkit -silent -fr -mr "evil.com"</div>
+                        <div class="tool-description">Test redirect parameters with evil.com</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Comprehensive Redirect Test</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">subfinder -d <span class="domain-placeholder">example.com</span> -all | httpx-toolkit -silent | gau | gf redirect | uro | qsreplace "https://evil.com" | httpx-toolkit -silent -fr -mr "evil.com"</div>
+                        <div class="tool-description">Full pipeline for open redirect testing</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-file-alt"></i> LFI Testing</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>LFI Discovery</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Basic LFI Test</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">echo "https://<span class="domain-placeholder">example.com</span>/" | gau | gf lfi | uro | sed 's/=.*/=/' | qsreplace "FUZZ" | sort -u | xargs -I{} ffuf -u {} -w payloads/lfi.txt -c -mr "root:(x|\*|\$[^\:]*):0:0:" -v</div>
+                        <div class="tool-description">LFI testing with FFUF and passwd file detection</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">LFI with Curl</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">gau <span class="domain-placeholder">example.com</span> | gf lfi | qsreplace "/etc/passwd" | xargs -I% -P 25 sh -c 'curl -s "%" 2>&1 | grep -q "root:x" && echo "VULN! %"'</div>
+                        <div class="tool-description">LFI testing with curl and parallel processing</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">HTTPx LFI Test</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">echo 'https://<span class="domain-placeholder">example.com</span>/index.php?page=' | httpx-toolkit -paths payloads/lfi.txt -threads 50 -random-agent -mc 200 -mr "root:(x|\*|\$[^\:]*):0:0:"</div>
+                        <div class="tool-description">LFI testing with httpx-toolkit</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2><i class="fas fa-cog"></i> Additional Tools</h2>
+                <i class="fas fa-chevron-down section-toggle"></i>
+            </div>
+            <div class="section-content">
+                <div class="tool-category">
+                    <h3>Content Type Filtering</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">HTML Content Filtering</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">echo <span class="domain-placeholder">example.com</span> | gau | grep -Eo '(\/[^\/]+)\.(php|asp|aspx|jsp|jsf|cfm|pl|perl|cgi|htm|html)$' | httpx-toolkit -status-code -mc 200 -content-type | grep -E 'text/html|application/xhtml+xml'</div>
+                        <div class="tool-description">Filter HTML content from discovered URLs</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">JavaScript Content Filtering</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">echo <span class="domain-placeholder">example.com</span> | gau | grep '\.js$' | httpx-toolkit -status-code -mc 200 -content-type | grep 'application/javascript'</div>
+                        <div class="tool-description">Filter JavaScript files from discovered URLs</div>
+                    </div>
+                </div>
+                <div class="tool-category">
+                    <h3>Miscellaneous</h3>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Extract IP Addresses</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" file.txt</div>
+                        <div class="tool-description">Extract IP addresses from text files</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Process Amass Output</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat domains.txt | cut -d']' -f2 | awk '{print $2}' | tr ',' '\n' | sort -u > amass.txt</div>
+                        <div class="tool-description">Process Amass output to extract clean domains</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Filter Dynamic Files</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat urls.txt | grep -E ".php|.asp|.aspx|.jspx|.jsp" | grep '=' | sort > output.txt</div>
+                        <div class="tool-description">Filter URLs for dynamic files with parameters</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">Clean Parameters</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat output.txt | sed 's/=.*/=/' > final.txt</div>
+                        <div class="tool-description">Clean parameter values from URLs</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">URO Deduplication</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat urls.txt | uro | sort -u > deduplicated_urls.txt</div>
+                        <div class="tool-description">Remove duplicate URLs using URO</div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-header">
+                            <span class="tool-name">QSReplace Parameter Testing</span>
+                            <button class="copy-btn" onclick="copyCommand(this)">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <div class="tool-command">cat urls.txt | qsreplace "FUZZ" | sort -u > fuzz_urls.txt</div>
+                        <div class="tool-description">Replace parameter values with FUZZ for testing</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-bug"></i>
+                ADCE626 TOOLKIT
+            </div>
+            <div class="footer-text">
+                Advanced Bug Bounty Recon Toolkit by adce626
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/adce626" target="_blank" class="social-link">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://x.com/adce626" target="_blank" class="social-link">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://x.com/coffinxp7" target="_blank" class="social-link">
+                    <i class="fab fa-twitter"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        Command copied to clipboard!
+    </div>
+
+    <script>
+        // Global variables
+        let currentDomain = 'example.com';
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial domain
+            updateCommands();
+            
+            // Add search functionality
+            document.getElementById('searchInput').addEventListener('input', function() {
+                filterTools(this.value);
+            });
+
+            // Add enter key support for domain input
+            document.getElementById('domainInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    updateCommands();
+                }
+            });
+
+            // Open first section by default
+            const firstSection = document.querySelector('.tool-section .section-content');
+            if (firstSection) {
+                firstSection.classList.add('active');
+                firstSection.previousElementSibling.querySelector('.section-toggle').classList.add('rotated');
+            }
+        });
+
+        // Update all commands with the current domain
+        function updateCommands() {
+            const domainInput = document.getElementById('domainInput');
+            const domain = domainInput.value.trim() || 'example.com';
+            currentDomain = domain;
+
+            // Update all domain placeholders
+            const placeholders = document.querySelectorAll('.domain-placeholder');
+            placeholders.forEach(placeholder => {
+                placeholder.textContent = domain;
+            });
+
+            // Show notification
+            showNotification('Commands updated with domain: ' + domain);
+        }
+
+        // Toggle section visibility
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            const toggle = header.querySelector('.section-toggle');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                toggle.classList.remove('rotated');
+            } else {
+                content.classList.add('active');
+                toggle.classList.add('rotated');
+            }
+        }
+
+        // Copy command to clipboard
+        function copyCommand(button) {
+            const toolItem = button.closest('.tool-item');
+            const command = toolItem.querySelector('.tool-command').textContent;
+            
+            navigator.clipboard.writeText(command).then(() => {
+                showNotification('Command copied to clipboard!');
+                
+                // Visual feedback
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showNotification('Failed to copy command');
+            });
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Filter tools based on search query
+        function filterTools(query) {
+            const toolSections = document.querySelectorAll('.tool-section');
+            const searchTerm = query.toLowerCase();
+            
+            toolSections.forEach(section => {
+                const toolItems = section.querySelectorAll('.tool-item');
+                let sectionHasVisibleItems = false;
+                
+                toolItems.forEach(item => {
+                    const toolName = item.querySelector('.tool-name').textContent.toLowerCase();
+                    const toolCommand = item.querySelector('.tool-command').textContent.toLowerCase();
+                    const toolDescription = item.querySelector('.tool-description').textContent.toLowerCase();
+                    
+                    if (toolName.includes(searchTerm) || 
+                        toolCommand.includes(searchTerm) || 
+                        toolDescription.includes(searchTerm)) {
+                        item.style.display = 'block';
+                        sectionHasVisibleItems = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Show/hide entire section based on whether it has visible items
+                if (searchTerm === '') {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = sectionHasVisibleItems ? 'block' : 'none';
+                }
+            });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + K to focus search
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            
+            // Escape to clear search
+            if (e.key === 'Escape') {
+                const searchInput = document.getElementById('searchInput');
+                searchInput.value = '';
+                filterTools('');
+                searchInput.blur();
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add loading animation to buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+
+<!-- Mirrored from adce626.vercel.app/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 08 Oct 2025 15:37:11 GMT -->
+</html>
